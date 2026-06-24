@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domino Scoreboard Neon Premium - By Muh. Rifal</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8; 
+            --container-bg: #ffffff;
+            
+            /* Tema Warna Tim yang Lebih Keren & Hidup */
+            --card-kami-bg: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); 
+            --card-lawan-bg: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); 
+            
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            /* Palet Warna Tombol Modern Glossy */
+            --btn-plus: linear-gradient(135deg, #3b82f6, #1d4ed8);    
+            --btn-minus: linear-gradient(135deg, #f43f5e, #be123c);   
+            --btn-win: linear-gradient(135deg, #22c55e, #15803d);     
+            --btn-lose: linear-gradient(135deg, #ef4444, #b91c1c);    
+            --btn-ceki: linear-gradient(135deg, #f97316, #c2410c);    
+            --btn-palang: linear-gradient(135deg, #a855f7, #6b21a8);  
+            --btn-set: linear-gradient(135deg, #06b6d4, #0369a1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            /* Background pattern abstrak menyerupai susunan balok domino */
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 40%),
+                linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 900px;
+            background: var(--container-bg);
+            border-radius: 36px;
+            padding: 40px 35px;
+            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ornamen Garis Estetik Domino di Sisi Kontainer */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #3b82f6, #a855f7, #22c55e, #f97316);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0f172a, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .developer {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #2563eb;
+            letter-spacing: 3px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            display: inline-block;
+            padding: 2px 10px;
+            background: rgba(37, 99, 235, 0.08);
+            border-radius: 6px;
+        }
+
+        /* Dekorasi Balok Domino Atas */
+        .domino-deco-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .domino-tile-mini {
+            width: 24px;
+            height: 42px;
+            background: #0f172a;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 4px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .domino-tile-mini::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            top: 50%;
+        }
+        .domino-tile-mini span {
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Kartu Tim dengan Style Balok Domino Tulen */
+        .team-card {
+            border-radius: 28px;
+            padding: 30px 25px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 45px -10px rgba(15, 23, 42, 0.08);
+        }
+
+        #card-a { background: var(--card-kami-bg); }
+        #card-b { background: var(--card-lawan-bg); }
+
+        /* Garis Pemisah Domino Tebal & Titik Center (Pivot) */
+        .team-card::before {
+            content: '';
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            top: 45%;
+            height: 3px;
+            background: rgba(15, 23, 42, 0.08);
+            border-radius: 2px;
+        }
+        .team-card::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -40%);
+            width: 8px;
+            height: 8px;
+            background: #64748b;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Panel Status Set Akumulasi (Kiri/Kanan Atas) */
+        .set-badge {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: #0f172a;
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .set-badge span {
+            color: #22c55e;
+            font-size: 0.95rem;
+        }
+
+        .team-name-input {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            width: 70%;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 10px;
+            padding: 4px;
+            transition: all 0.2s;
+        }
+
+        .team-name-input:focus {
+            outline: 2px solid #3b82f6;
+            background: rgba(255, 255, 255, 0.9);
+            cursor: text;
+        }
+
+        #card-a .team-name-input { color: #166534; }
+        #card-b .team-name-input { color: #991b1b; }
+
+        /* Kontrol Skor Utama */
+        .score-control-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0 35px 0;
+        }
+
+        .score-display {
+            font-size: 6rem;
+            font-weight: 900;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #0f172a;
+            min-width: 110px;
+            line-height: 1;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Tombol Bundar Bertekstur */
+        .btn-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 1.6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        /* Mapping Desain Gradasi Tombol */
+        .btn-win-lock { background: var(--btn-win); grid-column: span 2; }
+        .btn-lose-lock { background: var(--btn-lose); grid-column: span 2; }
+        .btn-ceki { background: var(--btn-ceki); }
+        .btn-palang { background: var(--btn-palang); }
+        
+        /* Tombol Set Spesial */
+        .btn-set-finish { 
+            background: var(--btn-set); 
+            grid-column: span 2;
+            margin-top: 5px;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        .reset-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-reset {
+            background: #0f172a;
+            padding: 14px 35px;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-reset:hover {
+            background: #ef4444;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 700px) {
+            .scoreboard { grid-template-columns: 1fr; gap: 40px; }
+            header h1 { font-size: 2rem; }
+            .container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>DOMINO SCOREBOARD</h1>
+        <div class="developer">BY MUH. RIFAL</div>
+        
+        <div class="domino-deco-wrapper">
+            <div class="domino-tile-mini"><span></span><span></span><span></span></div>
+            <div class="domino-tile-mini"><span></span><span></span></div>
+        </div>
+    </header>
+
+    <div class="scoreboard">
+        <div class="team-card" id="card-a">
+            <div class="set-badge">SET: <span id="set-a">0</span></div>
+            
+            <input type="text" class="team-name-input" value="KAMI" title="Klik untuk mengubah nama tim">
+            
+            <div class="score-control-wrapper">
+                <button class="btn-circle" style="background: var(--btn-minus);" onclick="updateScore('a', -1)">−</button>
+                <div class="score-display" id="score-a">0</div>
+                <button class="btn-circle" style="background: var(--btn-plus);" onclick="updateScore('a', 1)">+</button>
+            </div>
+            
+            <div class="btn-grid">
+                <button class="btn-win-lock" onclick="kunciMenang('a')">🏆 Kunci Menang (+2)</button>
+                <button class="btn-lose-lock" onclick="kunciKalah('a')">💥 Kunci Kalah (-1, Lawan +2)</button>
+                <button class="btn-ceki" onclick="updateScore('a', 3)">🎲 Ceki (+3)</button>
+                <button class="btn-palang" onclick="updateScore('a', 4)">✨ Ceki Palang (+4)</button>
+                <button class="btn-set-finish" onclick="tambahSet('a')">⭐ Set Selesai (Menang Set)</button>
+            </div>
+        </div>
+
+        <div class="team-card" id="card-b">
+            <div class="set-badge">SET: <span id="set-b">0</span></div>
+            
+            <input type="text" class="team-name-input" value="LAWAN" title="Klik untuk mengubah nama tim">
+            
+            <div class="score-control-wrapper">
+                <button class="btn-circle" style="background: var(--btn-minus);" onclick="updateScore('b', -1)">−</button>
+                <div class="score-display" id="score-b">0</div>
+                <button class="btn-circle" style="background: var(--btn-plus);" onclick="updateScore('b', 1)">+</button>
+            </div>
+            
+            <div class="btn-grid">
+                <button class="btn-win-lock" onclick="kunciMenang('b')">🏆 Kunci Menang (+2)</button>
+                <button class="btn-lose-lock" onclick="kunciKalah('b')">💥 Kunci Kalah (-1, Lawan +2)</button>
+                <button class="btn-ceki" onclick="updateScore('b', 3)">🎲 Ceki (+3)</button>
+                <button class="btn-palang" onclick="updateScore('b', 4)">✨ Ceki Palang (+4)</button>
+                <button class="btn-set-finish" onclick="tambahSet('b')">⭐ Set Selesai (Menang Set)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-container">
+        <button class="btn-reset" onclick="resetScore()">🔄 Reset Total Pertandingan</button>
+    </div>
+</div>
+
+<script>
+    let scoreA = 0;
+    let scoreB = 0;
+    let setA = 0;
+    let setB = 0;
+
+    const scoreDisplayA = document.getElementById('score-a');
+    const scoreDisplayB = document.getElementById('score-b');
+    const setDisplayA = document.getElementById('set-a');
+    const setDisplayB = document.getElementById('set-b');
+
+    function updateScore(team, val) {
+        if (team === 'a') {
+            scoreA += val;
+            if (scoreA < 0) scoreA = 0;
+            scoreDisplayA.innerText = scoreA;
+        } else {
+            scoreB += val;
+            if (scoreB < 0) scoreB = 0;
+            scoreDisplayB.innerText = scoreB;
+        }
+    }
+
+    function kunciMenang(team) {
+        updateScore(team, 2);
+    }
+
+    function kunciKalah(team) {
+        if (team === 'a') {
+            updateScore('a', -1);
+            updateScore('b', 2);
+        } else {
+            updateScore('b', -1);
+            updateScore('a', 2);
+        }
+    }
+
+    // Fungsi menambah skor Set dan otomatis mereset skor angka ronde ke 0
+    function tambahSet(team) {
+        if (team === 'a') {
+            setA += 1;
+            setDisplayA.innerText = setA;
+        } else {
+            setB += 1;
+            setDisplayB.innerText = setB;
+        }
+        // Otomatis reset skor poin ronde setelah set dinyatakan selesai
+        scoreA = 0;
+        scoreB = 0;
+        scoreDisplayA.innerText = scoreA;
+        scoreDisplayB.innerText = scoreB;
+    }
+
+    function resetScore() {
+        if (confirm('Apakah Anda yakin ingin mereset TOTAL seluruh skor dan set?')) {
+            scoreA = 0;
+            scoreB = 0;
+            setA = 0;
+            setB = 0;
+            scoreDisplayA.innerText = scoreA;
+            scoreDisplayB.innerText = scoreB;
+            setDisplayA.innerText = setA;
+            setDisplayB.innerText = setB;
+        }
+    }
+</script>
+
+</body>
+</html>
